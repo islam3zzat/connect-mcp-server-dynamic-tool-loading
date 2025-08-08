@@ -1,0 +1,35 @@
+deployAs:
+  - name: modelcontextprotocol
+    applicationType: service
+    endpoint: /mcp
+    configuration:
+      standardConfiguration:
+        - key: AUTH_TYPE
+          description: Use pre defined client credentials for MCP server or limit access to auth_token added in context. Use client_credentials or auth_token
+          default: "client_credentials"
+        - key: AUTH_URL
+          description: commercetools Composable Commerce Auth url
+          required: true
+        - key: API_URL
+          description: commercetools Composable Commerce API url
+          required: true
+        - key: STATELESS
+          description: Configuration to tell MCP server to mantain session or not- Use false for maintaing session, true for not.
+          default: "true"
+        - key: TOOLS
+          description: comma separate tools 
+          default: "all"
+          required: true
+        - key: IS_ADMIN
+          description: MCP server have previlege to create and edit resources
+          default: "false"
+      securedConfiguration:
+        - key: PROJECT_KEY
+          description: commercetools Composable Commerce project key
+          required: true
+        - key: CLIENT_ID
+          description: commercetools Composable Commerce client ID
+          required: true
+        - key: CLIENT_SECRET
+          description: commercetools Composable Commerce client secret
+          required: true
