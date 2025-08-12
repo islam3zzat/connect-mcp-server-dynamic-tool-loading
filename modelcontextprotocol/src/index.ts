@@ -182,21 +182,17 @@ app.use(bodyParser.urlencoded({ extended: true }));
     });
   }
 
+   logger.info("configuration ", JSON.stringify(configuration));
 
 // Create MCP server
 const agentServer = new CommercetoolsAgentEssentials({
   authConfig: getAuthConfig(env),
-  configuration: {
-    actions: {
-      products: { read: true },
-      cart: { read: true, create: true, update: true },
-    },
-  },
+  configuration, // <-- use the built configuration
 });
 
 // Add streamable transport layer
 const serverStreamable = new CommercetoolsAgentEssentialsStreamable({
-  stateless: false, // make the MCP server stateless/stateful
+  stateless: env.stateless, // make the MCP server stateless/stateful
   streamableHttpOptions: {
     sessionIdGenerator: undefined,
   },
