@@ -136,7 +136,7 @@ app.disable('x-powered-by');
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-  const selectedTools = env.tools!;
+  const selectedTools = env.tools ? env.tools.split(',').map((tool: string) => tool.trim()): [];
   const configuration: Configuration = {
     actions: {},
     context: {
