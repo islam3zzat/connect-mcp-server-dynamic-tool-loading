@@ -5,6 +5,8 @@ import {
   CommercetoolsAgentEssentials,
   CommercetoolsAgentEssentialsStreamable,
   AuthConfig,
+  Configuration,
+  AvailableNamespaces
 } from '@commercetools/agent-essentials/modelcontextprotocol';
 
 import express, { Express } from 'express';
@@ -17,11 +19,11 @@ type EnvVars = {
   authUrl?: string;
   projectKey?: string;
   apiUrl?: string;
-  remote?: boolean;
   stateless?: boolean;
-  port?: number;
   accessToken?: string;
   authType?: 'client_credentials' | 'auth_token';
+  tools?: any;
+  isAdmin?: boolean;
 };
 
 const env: EnvVars = {
@@ -30,12 +32,76 @@ const env: EnvVars = {
   authUrl: process.env.AUTH_URL,
   projectKey: process.env.PROJECT_KEY,
   apiUrl: process.env.API_URL,
-  remote: process.env.REMOTE === 'true',
   stateless: process.env.STATELESS === 'true',
-  port: Number(process.env.PORT) || 8080,
   accessToken: process.env.ACCESS_TOKEN,
   authType: process.env.AUTH_TYPE as EnvVars['authType'],
+  tools: process.env.TOOLS,
+  isAdmin: process.env.IS_ADMIN === 'true'
 };
+
+const ACCEPTED_TOOLS = [
+  'business-unit.read',
+  'business-unit.create',
+  'business-unit.update',
+  'products.read',
+  'products.create',
+  'products.update',
+  'project.read',
+  'product-search.read',
+  'category.read',
+  'category.create',
+  'category.update',
+  'channel.read',
+  'channel.create',
+  'channel.update',
+  'product-selection.read',
+  'product-selection.create',
+  'product-selection.update',
+  'order.read',
+  'order.create',
+  'order.update',
+  'cart.read',
+  'cart.create',
+  'cart.update',
+  'customer.create',
+  'customer.read',
+  'customer.update',
+  'customer-group.read',
+  'customer-group.create',
+  'customer-group.update',
+  'quote.read',
+  'quote.create',
+  'quote.update',
+  'quote-request.read',
+  'quote-request.create',
+  'quote-request.update',
+  'staged-quote.read',
+  'staged-quote.create',
+  'staged-quote.update',
+  'standalone-price.read',
+  'standalone-price.create',
+  'standalone-price.update',
+  'product-discount.read',
+  'product-discount.create',
+  'product-discount.update',
+  'cart-discount.read',
+  'cart-discount.create',
+  'cart-discount.update',
+  'discount-code.read',
+  'discount-code.create',
+  'discount-code.update',
+  'product-type.read',
+  'product-type.create',
+  'product-type.update',
+  'bulk.create',
+  'bulk.update',
+  'inventory.read',
+  'inventory.create',
+  'inventory.update',
+  'store.read',
+  'store.create',
+  'store.update',
+];
 
 // Create auth config
 const getAuthConfig = (env: EnvVars): AuthConfig => {
@@ -69,6 +135,53 @@ const app: Express = express();
 app.disable('x-powered-by');
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+
+  const selectedTools = env.tools!;
+  const configuration: Configuration = {
+    actions: {},
+    context: {
+      isAdmin: env.isAdmin
+    },
+  };
+
+  if (selectedTools[0] === 'all') {
+    ACCEPTED_TOOLS.forEach((tool) => {
+      if (!configuration.actions) {
+        configuration.actions = {};
+      }
+      const [namespace, action] = tool.split('.');
+
+      configuration.actions[namespace as AvailableNamespaces] = {
+        ...configuration.actions[namespace as AvailableNamespaces],
+        [action]: true,
+      };
+    });
+  } else if (selectedTools[0] === 'all.read') {
+    ACCEPTED_TOOLS.forEach((tool) => {
+      if (!configuration.actions) {
+        configuration.actions = {};
+      }
+      const [namespace, action] = tool.split('.');
+      if (action === 'read') {
+        configuration.actions[namespace as AvailableNamespaces] = {
+          ...configuration.actions[namespace as AvailableNamespaces],
+          [action]: true,
+        };
+      }
+    });
+  } else {
+    selectedTools.forEach((tool: any) => {
+      if (!configuration.actions) {
+        configuration.actions = {};
+      }
+      const [namespace, action] = tool.split('.');
+      configuration.actions[namespace as AvailableNamespaces] = {
+        ...(configuration.actions[namespace as AvailableNamespaces] || {}),
+        [action]: true,
+      };
+    });
+  }
+
 
 // Create MCP server
 const agentServer = new CommercetoolsAgentEssentials({
