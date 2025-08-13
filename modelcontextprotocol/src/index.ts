@@ -6,11 +6,11 @@ import {
   CommercetoolsAgentEssentialsStreamable,
   AuthConfig,
   Configuration,
-  AvailableNamespaces
+  AvailableNamespaces,
 } from '@commercetools/agent-essentials/modelcontextprotocol';
 
+
 import express, { Express } from 'express';
-import bodyParser from 'body-parser';
 import { logger } from './utils/logger.utils';
 
 type EnvVars = {
@@ -132,9 +132,6 @@ const getAuthConfig = (env: EnvVars): AuthConfig => {
 
 // Initialize Express
 const app: Express = express();
-app.disable('x-powered-by');
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
 
   const selectedTools = env.tools ? env.tools.split(',').map((tool: string) => tool.trim()): [];
   const configuration: Configuration = {
@@ -182,27 +179,25 @@ app.use(bodyParser.urlencoded({ extended: true }));
     });
   }
 
-   logger.info("configuration ", JSON.stringify(configuration));
-
 // Create MCP server
 const agentServer = new CommercetoolsAgentEssentials({
   authConfig: getAuthConfig(env),
-  configuration, // <-- use the built configuration
+  configuration,
 });
 
 // Add streamable transport layer
 const serverStreamable = new CommercetoolsAgentEssentialsStreamable({
-  stateless: env.stateless, // make the MCP server stateless/stateful
+  stateless: env.stateless,
   streamableHttpOptions: {
     sessionIdGenerator: undefined,
   },
   server: agentServer,
-  app: app, // optional express app instance
+  app: app, 
 });
 
 // Start the server
 serverStreamable.listen(8080, () => {
-  logger.info(`⚡️ MCP server listening on port 8080}`);
+  logger.info(`⚡️ MCP server listening on port 8080`);
 });
 
 export default serverStreamable;
