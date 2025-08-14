@@ -187,7 +187,7 @@ const agentServer = new CommercetoolsAgentEssentials({
 
 // Add streamable transport layer
 const serverStreamable = new CommercetoolsAgentEssentialsStreamable({
-  stateless: env.stateless,
+  stateless: process.env.STATELESS === 'true',
   streamableHttpOptions: {
     sessionIdGenerator: undefined,
   },
