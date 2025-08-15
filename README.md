@@ -1,4 +1,4 @@
-# Composable Commerce MCP Server Template [Early version]
+# Remote MCP Server Template [Early version]
 
 This project provides a template for building a **Model Context Protocol (MCP) server** for commercetools Composable Commerce. The MCP server can be hosted on [commercetools Connect](https://docs.commercetools.com/connect/) and is designed to be easily configurable and extensible for various commerce use cases.
 
