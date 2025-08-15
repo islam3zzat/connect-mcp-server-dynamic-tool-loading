@@ -16,7 +16,6 @@ deployAs:
         - key: TOOLS
           description: comma separate tools (refer to list of available tools in the documentation https://docs.commercetools.com/sdk/commerce-mcp/essentials-mcp#individual-tools)
           default: "all"
-          required: true
         - key: IS_ADMIN
           description: MCP server have previlege to create and edit resources, please review use case before setting to true
           default: "false"
