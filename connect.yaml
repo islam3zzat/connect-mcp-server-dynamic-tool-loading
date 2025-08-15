@@ -5,7 +5,7 @@ deployAs:
     configuration:
       standardConfiguration:
         - key: AUTH_TYPE
-          description: Use pre defined client credentials for MCP server or limit access to auth_token added in context. Use client_credentials or auth_token
+          description: Use client_credentials for Public MCP with configured API client or limit access to auth_token added as Bearer token in Authorization header from the Agent.
           default: "client_credentials"
         - key: AUTH_URL
           description: commercetools Composable Commerce Auth url
@@ -13,15 +13,12 @@ deployAs:
         - key: API_URL
           description: commercetools Composable Commerce API url
           required: true
-        - key: STATELESS
-          description: Configuration to tell MCP server to mantain session or not- Use false for maintaing session, true for not.
-          default: "true"
         - key: TOOLS
-          description: comma separate tools 
+          description: comma separate tools (refer to list of available tools in the documentation https://docs.commercetools.com/sdk/commerce-mcp/essentials-mcp#individual-tools)
           default: "all"
           required: true
         - key: IS_ADMIN
-          description: MCP server have previlege to create and edit resources
+          description: MCP server have previlege to create and edit resources, please review use case before setting to true
           default: "false"
       securedConfiguration:
         - key: PROJECT_KEY
