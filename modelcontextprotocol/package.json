@@ -3,6 +3,7 @@
   "version": "2.0.0",
   "homepage": "https://github.com/commercetools/mcp-essentials",
   "description": "A command line tool for setting up commercetools MCP server",
+  "main": "dist/index.js",
   "bin": "dist/index.js",
   "files": [
     "dist/index.js",
@@ -13,11 +14,12 @@
   ],
   "scripts": {
     "preinstall": "npx only-allow npm",
-    "prebuild": "npm --filter @commercetools/agent-essentials run build",
     "dev": "concurrently -n BUILD,SERVER -c magenta,cyan \"npm dev:build\" \"npm dev:run\"",
     "dev:build": "tsup --env.NODE_ENV dev",
     "dev:run": "nodemon  dist/index.js --watch",
-    "build": "tsc && node -e \"require('fs').chmodSync('dist/index.js', '755')\"",
+    "build": "tsc",
+    "postbuild": "chmod +x dist/index.js",
+    "start": "node dist/index.js",
     "clean": "rm -rf dist",
     "lint": "eslint \"./**/*.ts*\"",
     "prettier": "prettier './**/*.{js,ts,md,html,css}' --write",
