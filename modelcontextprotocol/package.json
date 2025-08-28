@@ -1,48 +1,65 @@
 {
-  "name": "service-typescript",
-  "description": "",
-  "version": "1.0.0",
-  "main": "index.js",
-  "private": true,
+  "name": "@commercetools/mcp-essentials",
+  "version": "2.0.0",
+  "homepage": "https://github.com/commercetools/mcp-essentials",
+  "description": "A command line tool for setting up commercetools MCP server",
+  "bin": "dist/index.js",
+  "files": [
+    "dist/index.js",
+    "LICENSE",
+    "README.md",
+    "VERSION",
+    "package.json"
+  ],
   "scripts": {
-    "start": "node build/index.js",
-    "gcp-build": "tsc",
-    "start:dev": "concurrently -k \"tsc --watch\" \"nodemon -q build/index.js\"",
-    "build": "rimraf ./build && tsc",
-    "lint": "eslint . --ext .ts",
-    "prettier": "prettier --write '**/*.{js,ts}'",
-    "test": "jest --config jest.config.cjs",
-    "test:watch": "jest --watch",
-    "connector:post-deploy": "node build/connector/post-deploy.js",
-    "connector:pre-undeploy": "node build/connector/pre-undeploy.js"
+    "preinstall": "npx only-allow npm",
+    "prebuild": "npm --filter @commercetools/agent-essentials run build",
+    "dev": "concurrently -n BUILD,SERVER -c magenta,cyan \"npm dev:build\" \"npm dev:run\"",
+    "dev:build": "tsup --env.NODE_ENV dev",
+    "dev:run": "nodemon  dist/index.js --watch",
+    "build": "tsc && node -e \"require('fs').chmodSync('dist/index.js', '755')\"",
+    "clean": "rm -rf dist",
+    "lint": "eslint \"./**/*.ts*\"",
+    "prettier": "prettier './**/*.{js,ts,md,html,css}' --write",
+    "prettier-check": "prettier './**/*.{js,ts,md,html,css}' --check",
+    "validate": "npm run lint --fix && npm run prettier"
   },
-  "author": "",
-  "license": "MIT",
-  "devDependencies": {
-    "@tsconfig/recommended": "^1.0.3",
-    "@types/express": "^4.17.14",
-    "@types/jest": "^29.0.3",
-    "@types/node": "^18.7.18",
-    "@types/validator": "^13.7.10",
-    "@typescript-eslint/eslint-plugin": "^5.46.0",
-    "@typescript-eslint/parser": "^5.46.0",
-    "concurrently": "^8.2.0",
-    "eslint": "^8.46.0",
-    "jest": "^29.6.2",
-    "nodemon": "^3.0.1",
-    "prettier": "^3.0.1",
-    "rimraf": "^5.0.1",
-    "ts-jest": "^29.1.1",
-    "typescript": "^5.1.6"
+  "engines": {
+    "node": ">=18"
+  },
+  "publishConfig": {
+    "access": "public"
   },
   "dependencies": {
-    "@commercetools-backend/loggers": "^21.19.0",
-    "@commercetools/mcp-essentials": "^2.0.0",
-    "@commercetools/platform-sdk": "^4.0.0",
-    "@commercetools/sdk-client-v2": "^2.0.0",
-    "body-parser": "^1.20.2",
-    "dotenv": "^16.3.1",
-    "express": "^4.18.2",
-    "validator": "^13.11.0"
+    "@commercetools/agent-essentials": "^2.0.0",
+    "@modelcontextprotocol/sdk": "^1.11.0",
+    "colors": "^1.4.0",
+    "dotenv": "^17.2.1",
+    "mcp-remote": "^0.1.18"
+  },
+  "keywords": [
+    "mcp",
+    "modelcontextprotocol",
+    "commercetools"
+  ],
+  "author": "commercetools GmbH <info@commercetools.com> (https://commercetools.com)",
+  "license": "MIT",
+  "devDependencies": {
+    "@eslint/compat": "^1.2.6",
+    "@types/jest": "^29.5.14",
+    "@types/node": "^22.13.4",
+    "@typescript-eslint/eslint-plugin": "^8.24.1",
+    "concurrently": "^9.2.0",
+    "eslint-config-prettier": "^10.0.1",
+    "eslint-plugin-import": "^2.31.0",
+    "eslint-plugin-jest": "^28.11.0",
+    "eslint-plugin-prettier": "^5.2.3",
+    "globals": "^15.15.0",
+    "jest": "^29.7.0",
+    "prettier": "^3.5.1",
+    "ts-jest": "^29.2.5",
+    "ts-node": "^10.9.2",
+    "tsup": "^8.3.5",
+    "typescript": "^5.8.3"
   }
 }
