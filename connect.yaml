@@ -18,7 +18,7 @@ deployAs:
           default: "all"
         - key: IS_ADMIN
           description: MCP server have previlege to create and edit resources, please review use case before setting to true
-          default: "false"
+          default: "true"
       securedConfiguration:
         - key: PROJECT_KEY
           description: commercetools Composable Commerce project key
