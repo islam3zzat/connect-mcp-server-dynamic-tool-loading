@@ -7,7 +7,7 @@ import {
   AuthConfig,
   Configuration,
   AvailableNamespaces,
-} from '@commercetools/agent-essentials/modelcontextprotocol';
+} from '@islam3zzat/agent-essentials/modelcontextprotocol';
 
 
 import express, { Express } from 'express';
@@ -133,66 +133,71 @@ const getAuthConfig = (env: EnvVars): AuthConfig => {
 // Initialize Express
 const app: Express = express();
 
-  const selectedTools = env.tools ? env.tools.split(',').map((tool: string) => tool.trim()): [];
-  const configuration: Configuration = {
-    actions: {},
-    context: {
-      isAdmin: env.isAdmin
-    },
-  };
+const selectedTools = env.tools ? env.tools.split(',').map((tool: string) => tool.trim()) : [];
+const configuration: Configuration = {
+  actions: {},
+  context: {
+    isAdmin: env.isAdmin
+  },
+};
 
-  if (selectedTools[0] === 'all') {
-    ACCEPTED_TOOLS.forEach((tool) => {
-      if (!configuration.actions) {
-        configuration.actions = {};
-      }
-      const [namespace, action] = tool.split('.');
+if (selectedTools[0] === 'all') {
+  ACCEPTED_TOOLS.forEach((tool) => {
+    if (!configuration.actions) {
+      configuration.actions = {};
+    }
+    const [namespace, action] = tool.split('.');
 
+    configuration.actions[namespace as AvailableNamespaces] = {
+      ...configuration.actions[namespace as AvailableNamespaces],
+      [action]: true,
+    };
+  });
+} else if (selectedTools[0] === 'all.read') {
+  ACCEPTED_TOOLS.forEach((tool) => {
+    if (!configuration.actions) {
+      configuration.actions = {};
+    }
+    const [namespace, action] = tool.split('.');
+    if (action === 'read') {
       configuration.actions[namespace as AvailableNamespaces] = {
         ...configuration.actions[namespace as AvailableNamespaces],
         [action]: true,
       };
-    });
-  } else if (selectedTools[0] === 'all.read') {
-    ACCEPTED_TOOLS.forEach((tool) => {
-      if (!configuration.actions) {
-        configuration.actions = {};
-      }
-      const [namespace, action] = tool.split('.');
-      if (action === 'read') {
-        configuration.actions[namespace as AvailableNamespaces] = {
-          ...configuration.actions[namespace as AvailableNamespaces],
-          [action]: true,
-        };
-      }
-    });
-  } else {
-    selectedTools.forEach((tool: any) => {
-      if (!configuration.actions) {
-        configuration.actions = {};
-      }
-      const [namespace, action] = tool.split('.');
-      configuration.actions[namespace as AvailableNamespaces] = {
-        ...(configuration.actions[namespace as AvailableNamespaces] || {}),
-        [action]: true,
-      };
-    });
-  }
+    }
+  });
+} else {
+  selectedTools.forEach((tool: any) => {
+    if (!configuration.actions) {
+      configuration.actions = {};
+    }
+    const [namespace, action] = tool.split('.');
+    configuration.actions[namespace as AvailableNamespaces] = {
+      ...(configuration.actions[namespace as AvailableNamespaces] || {}),
+      [action]: true,
+    };
+  });
+}
 
-// Create MCP server
-const agentServer = new CommercetoolsAgentEssentials({
-  authConfig: getAuthConfig(env),
-  configuration,
-});
+
 
 // Add streamable transport layer
+
 const serverStreamable = new CommercetoolsAgentEssentialsStreamable({
   stateless: process.env.STATELESS === 'true',
   streamableHttpOptions: {
     sessionIdGenerator: undefined,
   },
-  server: agentServer,
-  app: app, 
+  server: async () => {
+    // Create MCP server
+    const agentServer = await CommercetoolsAgentEssentials.create({
+      authConfig: getAuthConfig(env),
+      configuration,
+    });
+
+    return agentServer;
+  },
+  app: app,
 });
 
 // Start the server
